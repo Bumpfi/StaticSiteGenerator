@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 
 
 def copy_static_to_public(src_dir="static", dest_dir="public"):
@@ -58,8 +58,8 @@ def main():
     # Delete anything in the public directory
     copy_static_to_public()
 
-    # Generate the main page
-    generate_page("content/index.md", "template.html", "public/index.html")
+    # Generate all pages recursively
+    generate_pages_recursive("content", "template.html", "public")
 
     print("Site generation completed successfully!")
 
