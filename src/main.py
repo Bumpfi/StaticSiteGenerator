@@ -1,6 +1,8 @@
 import os
 import shutil
 
+from generate_page import generate_page
+
 
 def copy_static_to_public(src_dir="static", dest_dir="public"):
     """
@@ -50,11 +52,16 @@ def _copy_directory_contents(src_dir, dest_dir):
 def main():
     """
     Main function to run the static site generator.
-    Currently just copies static files to public directory.
     """
     print("Starting static site generator...")
+
+    # Delete anything in the public directory
     copy_static_to_public()
-    print("Static files copied successfully!")
+
+    # Generate the main page
+    generate_page("content/index.md", "template.html", "public/index.html")
+
+    print("Site generation completed successfully!")
 
 
 if __name__ == "__main__":
