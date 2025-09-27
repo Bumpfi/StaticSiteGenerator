@@ -1,10 +1,11 @@
 import os
 import shutil
+import sys
 
 from generate_page import generate_pages_recursive
 
 
-def copy_static_to_public(src_dir="static", dest_dir="public"):
+def copy_static_to_public(src_dir="static", dest_dir="docs"):
     """
     Recursively copies all contents from source directory to destination directory.
     First deletes all contents of destination directory for a clean copy.
@@ -55,11 +56,18 @@ def main():
     """
     print("Starting static site generator...")
 
-    # Delete anything in the public directory
+    # Get basepath from command line argument, default to "/"
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+
+    print(f"Using basepath: {basepath}")
+
+    # Delete anything in the docs directory and copy static files
     copy_static_to_public()
 
     # Generate all pages recursively
-    generate_pages_recursive("content", "template.html", "public")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
     print("Site generation completed successfully!")
 

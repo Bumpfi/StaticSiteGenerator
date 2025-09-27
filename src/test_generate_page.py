@@ -171,6 +171,84 @@ Some content without H1."""
         self.assertNotIn("{{ Title }}", result)
         self.assertNotIn("{{ Content }}", result)
 
+    def test_generate_page_with_basepath(self):
+        """Test page generation with custom basepath"""
+        # Create test markdown file
+        markdown_content = """# Test Title
+
+This is a test paragraph with [a link](/) and an image:
+
+![Test image](/images/test.png)"""
+
+        markdown_path = os.path.join(self.content_dir, "test.md")
+        with open(markdown_path, "w") as f:
+            f.write(markdown_content)
+
+        # Create test template with absolute URLs
+        template_content = """<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ Title }}</title>
+    <link href="/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <img src="/logo.png" alt="Logo" />
+    {{ Content }}
+</body>
+</html>"""
+
+        template_path = os.path.join(self.test_dir, "template.html")
+        with open(template_path, "w") as f:
+            f.write(template_content)
+
+        # Generate page with custom basepath
+        output_path = os.path.join(self.public_dir, "test.html")
+        generate_page(markdown_path, template_path, output_path, "/mysite/")
+
+        # Read and verify content
+        with open(output_path, "r") as f:
+            result = f.read()
+
+        # Check that basepath was applied to template URLs
+        self.assertIn('href="/mysite/styles.css"', result)
+        self.assertIn('src="/mysite/logo.png"', result)
+
+        # Check that basepath was applied to markdown content URLs
+        self.assertIn('href="/mysite/"', result)
+        self.assertIn('src="/mysite/images/test.png"', result)
+
+        # Verify no original absolute URLs remain
+        self.assertNotIn('href="/"', result)
+        self.assertNotIn('src="/"', result)
+
+    def test_generate_page_basepath_default(self):
+        """Test page generation with default basepath"""
+        # Create test markdown file
+        markdown_content = "# Test\n\n[Link](/page) and ![Image](/img.png)"
+
+        markdown_path = os.path.join(self.content_dir, "test.md")
+        with open(markdown_path, "w") as f:
+            f.write(markdown_content)
+
+        # Create template with absolute URLs
+        template_content = '<html><link href="/style.css" />{{ Content }}</html>'
+        template_path = os.path.join(self.test_dir, "template.html")
+        with open(template_path, "w") as f:
+            f.write(template_content)
+
+        # Generate page with default basepath (should be "/")
+        output_path = os.path.join(self.public_dir, "test.html")
+        generate_page(markdown_path, template_path, output_path)
+
+        # Read and verify content
+        with open(output_path, "r") as f:
+            result = f.read()
+
+        # With default basepath "/", URLs should remain unchanged
+        self.assertIn('href="/style.css"', result)
+        self.assertIn('href="/page"', result)
+        self.assertIn('src="/img.png"', result)
+
 
 class TestGeneratePagesRecursive(unittest.TestCase):
     def setUp(self):
