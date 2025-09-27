@@ -6,6 +6,6 @@
 echo "Building site for production deployment..."
 
 # Build the site with the GitHub Pages basepath
-python3 src/main.py "/StaticSiteGenerator/"
+python3 src/main.py "/"
 
 echo "Production build completed! Site is ready for GitHub Pages deployment."
